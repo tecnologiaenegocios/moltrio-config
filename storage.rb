@@ -1,5 +1,5 @@
 module Moltrio
-  class Config
+  module Config
     class Storage
       def [](key)
         raise NotImplementedError

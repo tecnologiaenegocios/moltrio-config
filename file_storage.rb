@@ -1,7 +1,7 @@
 require 'yaml'
 
 module Moltrio
-  class Config
+  module Config
 
     class FileStorage < Storage
       attr_reader :path
