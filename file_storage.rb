@@ -12,7 +12,8 @@ module Moltrio
 
       def [](key)
         if has_key?(key)
-          traverse(splitted_key(key))
+          *path, leaf = splitted_key(key)
+          traverse(path).fetch(leaf)
         else
           nil
         end
@@ -56,7 +57,7 @@ module Moltrio
       end
 
       def splitted_key(key)
-        key.to_s.split('.').map(&:to_s)
+        key.to_s.split('.')
       end
 
       def traverse(splitted)
