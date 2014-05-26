@@ -41,6 +41,7 @@ module Moltrio
       end
 
     private
+
       def ensure_granted!
         AccessControl.manager.can!(
           AccessControl.registry.fetch('change_system_configuration'),
@@ -48,8 +49,9 @@ module Moltrio
         )
       end
 
-      def ensure_loaded
-        load unless loaded?
+      def hash
+        return @hash if defined?(@hash)
+        @hash = load_from_file
       end
 
       def split_key(key)
@@ -64,18 +66,11 @@ module Moltrio
         splitted.inject(hash) { |current, part| current[part] ||= {} }
       end
 
-      def hash
-        ensure_loaded
-        @hash ||= {}
-      end
-
-      def load
-        @hash = YAML.load_file(path) if File.file?(path)
-        @loaded = true
-      end
-
-      def loaded?
-        !!@loaded
+      def load_from_file
+        preprocessed = ERB.new(File.read(path)).result
+        YAML.load(preprocessed)
+      rescue Errno::ENOENT
+        nil
       end
 
       def save
