@@ -12,6 +12,7 @@ module Moltrio
 
       def [](key)
         storages_for_key(key)
+          .reverse
           .map { |storage| storage.fetch(key) }
           .inject { |prev_value, value|
             if prev_value.respond_to?(:deep_merge)
