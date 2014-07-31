@@ -1,5 +1,6 @@
 require_relative 'storage'
 require 'hamster'
+require 'active_support/core_ext'
 
 module Moltrio
   module Config
@@ -10,13 +11,15 @@ module Moltrio
       end
 
       def [](key)
-        storage = storage_for_key(key)
+        storages_for_key(key).inject { |prev_value, storage|
+          value = storage.fetch(key)
 
-        if storage == :no_storage
-          nil
-        else
-          storage[key]
-        end
+          if prev_value.respond_to?(:deep_merge)
+            prev_value.deep_merge(value)
+          else
+            value
+          end
+        }
       end
 
       def []=(key, value)
@@ -24,14 +27,14 @@ module Moltrio
       end
 
       def has_key?(key)
-        storage_for_key(key) != :no_storage
+        storages_for_key(key).any?
       end
 
     private
       attr_reader :storages
 
-      def storage_for_key(key)
-        @storages.detect { |storage| storage.has_key?(key) } || :no_storage
+      def storages_for_key(key)
+        storages.select { |storage| storage.has_key?(key) }
       end
 
       def first_storage
