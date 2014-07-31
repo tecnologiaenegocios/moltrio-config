@@ -11,15 +11,15 @@ module Moltrio
       end
 
       def [](key)
-        storages_for_key(key).inject { |prev_value, storage|
-          value = storage.fetch(key)
-
-          if prev_value.respond_to?(:deep_merge)
-            prev_value.deep_merge(value)
-          else
-            value
-          end
-        }
+        storages_for_key(key)
+          .map { |storage| storage.fetch(key) }
+          .inject { |prev_value, value|
+            if prev_value.respond_to?(:deep_merge)
+              prev_value.deep_merge(value)
+            else
+              value
+            end
+          }
       end
 
       def []=(key, value)
