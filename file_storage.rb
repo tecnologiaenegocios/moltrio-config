@@ -1,4 +1,8 @@
 require 'yaml'
+require 'hamster'
+
+# This class uses Hamster hashes (instead of native ruby hashes) to allow
+# lockless multi-thread usage.
 
 module Moltrio
   module Config
@@ -13,24 +17,30 @@ module Moltrio
       def [](key)
         if has_key?(key)
           *path, leaf = splitted_key(key)
-          traverse(path).fetch(leaf)
+          hamster_to_ruby(traverse(path).fetch(leaf))
         else
           nil
         end
       end
 
-      def []=(key, value)
-        # ensure_granted!
-        parent_key, key = split_key(key)
-        parent_hash = traverse(parent_key)
-        parent_hash[key] = value
+      def []=(dotted_key, value)
+        ancestor_keys = splitted_key(dotted_key)
+        current_value = value
+
+        while ancestor_keys.any?
+          *ancestor_keys, current_key = ancestor_keys
+          current_value = traverse(ancestor_keys).put(current_key, current_value)
+        end
+
+        @hash = current_value
+
         save
       end
 
       def has_key?(key)
         not_found = Object.new
         value = splitted_key(key).inject(hash) do |current, part|
-          if current.has_key?(part)
+          if current.respond_to?(:has_key?) && current.has_key?(part)
             current[part]
           else
             break not_found
@@ -42,39 +52,70 @@ module Moltrio
 
     private
 
-      def ensure_granted!
-        AccessControl.manager.can!(
-          AccessControl.registry.fetch('change_system_configuration'),
-          []
-        )
-      end
-
       def hash
         return @hash if defined?(@hash)
         @hash = load_from_file
-      end
-
-      def split_key(key)
-        ->(parts) { [parts[0..-2], parts.last] }[splitted_key(key)]
       end
 
       def splitted_key(key)
         key.to_s.split('.')
       end
 
-      def traverse(splitted)
-        splitted.inject(hash) { |current, part| current[part] ||= {} }
+      def traverse(splitted_key)
+        splitted_key.inject(hash) { |object, current_key|
+          if object.respond_to?(:has_key?) && object.has_key?(current_key)
+            object.fetch(current_key)
+          else
+            break Hamster.hash
+          end
+        }
       end
 
       def load_from_file
-        preprocessed = ERB.new(File.read(path)).result
-        YAML.load(preprocessed)
+        ruby_hash = begin
+          file = File.open(path, "r")
+          file.flock(File::LOCK_SH)
+
+          preprocessed = ERB.new(File.read(path)).result
+          YAML.load(preprocessed)
+        rescue Errno::ENOENT
+          {}
+        ensure
+          file && file.flock(File::LOCK_UN)
+        end
+
+        ruby_to_hamster(ruby_hash)
       rescue Errno::ENOENT
-        {}
+        Hamster.hash
       end
 
       def save
-        File.write(path, YAML.dump(hash))
+        file = File.open(path, "w")
+        file.flock(File::LOCK_EX)
+
+        file.write YAML.dump(hamster_to_ruby(hash))
+      ensure
+        file.flock(File::LOCK_UN)
+        file.close
+      end
+
+      def hamster_to_ruby(object)
+        return object unless object.kind_of?(Hamster::Hash)
+
+        object.inject({}) { |hash, key, value|
+          hash[key] = hamster_to_ruby(value)
+          hash
+        }
+      end
+
+      # Not concerned about circular structures here, since this is just for
+      # internal usage.
+      def ruby_to_hamster(object)
+        return object unless object.kind_of?(Hash)
+
+        object.inject(Hamster.hash) { |hash, (key, value)|
+          hash.put(key, ruby_to_hamster(value))
+        }
       end
     end
 
