@@ -70,7 +70,7 @@ module Moltrio
         preprocessed = ERB.new(File.read(path)).result
         YAML.load(preprocessed)
       rescue Errno::ENOENT
-        nil
+        {}
       end
 
       def save
