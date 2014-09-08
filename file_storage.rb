@@ -26,10 +26,13 @@ module Moltrio
       def []=(dotted_key, value)
         ancestor_keys = splitted_key(dotted_key)
         current_value = value
+        base_hash = hash
 
         while ancestor_keys.any?
           *ancestor_keys, current_key = ancestor_keys
-          current_value = traverse(ancestor_keys).put(current_key, current_value)
+
+          old_value = traverse(ancestor_keys, base_hash: base_hash)
+          current_value = old_value.put(current_key, current_value)
         end
 
         @hash = current_value
@@ -61,8 +64,8 @@ module Moltrio
         key.to_s.split('.')
       end
 
-      def traverse(splitted_key)
-        splitted_key.inject(hash) { |object, current_key|
+      def traverse(splitted_key, base_hash: hash)
+        splitted_key.inject(base_hash) { |object, current_key|
           if object.respond_to?(:has_key?) && object.has_key?(current_key)
             object.fetch(current_key)
           else
