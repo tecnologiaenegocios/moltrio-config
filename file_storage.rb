@@ -35,6 +35,12 @@ module Moltrio
           current_value = old_value.put(current_key, current_value)
         end
 
+        unless @hash.equal?(base_hash)
+          # Retry the change. The hash was updated by other thread while we
+          # were computing the new hash.
+          return self[dotted_key] = value
+        end
+
         @hash = current_value
 
         save
