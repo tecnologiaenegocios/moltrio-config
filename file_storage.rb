@@ -99,6 +99,10 @@ module Moltrio
       end
 
       def save
+        unless File.exist?(path)
+          FileUtils.mkdir_p(File.dirname(path))
+        end
+
         file = File.open(path, "w")
         file.flock(File::LOCK_EX)
 
