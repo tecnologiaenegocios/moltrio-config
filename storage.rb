@@ -13,11 +13,16 @@ module Moltrio
         raise NotImplementedError
       end
 
-      def fetch(key, *args)
-        return self[key] if has_key?(key)
-        return args.first if args.size == 1
-
-        raise KeyError, key
+      def fetch(key, default = Moltrio::Undefined)
+        if has_key?(key)
+          self[key]
+        elsif default != Moltrio::Undefined
+          default
+        elsif block_given?
+          yield
+        else
+          raise KeyError, key
+        end
       end
     end
   end
