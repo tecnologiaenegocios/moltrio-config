@@ -1,3 +1,5 @@
+require_relative '../undefined'
+
 module Moltrio
   module Config
     class Storage
