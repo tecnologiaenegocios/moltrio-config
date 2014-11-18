@@ -4,7 +4,7 @@ module Moltrio
     class DatabaseYmlStorage < Storage
       attr_reader :real_storage, :environment
 
-      def initialize(storage, environment: RAILS_ENV)
+      def initialize(storage, environment: rails_environment)
         @real_storage = storage
         @environment = environment
       end
@@ -25,6 +25,14 @@ module Moltrio
 
       def transform_key(key)
         key.sub(/^database_yml/, environment)
+      end
+
+      def rails_environment
+        if defined?(RAILS_ENV)
+          RAILS_ENV
+        else
+          "production"
+        end
       end
     end
 
