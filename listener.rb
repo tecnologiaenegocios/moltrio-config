@@ -19,7 +19,12 @@ module Moltrio
           loop do
             clients_root.each_child do |client_dir|
               client_name = client_dir.basename
-              change_time = (client_dir + 'config.yml').mtime
+
+              change_time = begin
+                (client_dir + 'config.yml').mtime
+              rescue Errno::ENOENT
+                next
+              end
 
               prev_time = prev_timestamps[client_name]
               if prev_time && prev_time < change_time
