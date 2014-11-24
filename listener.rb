@@ -1,5 +1,3 @@
-require 'listen'
-
 module Moltrio
   module Config
     module Listener
