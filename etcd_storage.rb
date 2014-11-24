@@ -9,16 +9,26 @@ module Moltrio
       def initialize(etcd:, namespace:)
         @etcd = etcd
         @namespace = namespace
+        @cache = Hamster.hash
       end
 
       def [](key)
-        etcd_key = etcdify_key(key)
-        etcd.get(etcd_key)
+        if cache.has_key?(key)
+          cache[key]
+        else
+          etcd_key = etcdify_key(key)
+          value = etcd.get(etcd_key)
+
+          @cache = cache.put(key, value)
+          value
+        end
       end
 
       def []=(key, value)
         etcd_key = etcdify_key(key)
         etcd.set(etcd_key, value)
+
+        @cache = cache.put(key, value)
       end
 
       def has_key?(key)
@@ -26,6 +36,7 @@ module Moltrio
       end
 
     private
+      attr_reader :cache
 
       def etcdify_key(key)
         namespace + '/' + key
