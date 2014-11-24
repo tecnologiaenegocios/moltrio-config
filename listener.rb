@@ -4,28 +4,48 @@ module Moltrio
   module Config
     module Listener
 
+      FS_POLL_INTERVAL = 5
+
       def self.listen_fs_changes
-        return if defined?(@fs_listeners)
+        return if defined?(@fs_listener)
 
-        client_config_callback = ->(modified, added, removed) {
-          all_changes = (modified + added + removed)
+        @fs_listener = Thread.new do
+          Thread.current.abort_on_exception = true
 
-          all_changes.each do |config_path|
-            config_name = Pathname(config_path).parent.basename.to_s
-            Moltrio::Config.evict_cache_for(config_name)
+          prev_timestamps = {}
+          project_root = Rails.root
+
+          clients_root = project_root + 'clients'
+          global_configs_root = project_root + 'config' + 'moltrio'
+
+          loop do
+            clients_root.each_child do |client_dir|
+              client_name = client_dir.basename
+              change_time = (client_dir + 'config.yml').mtime
+
+              prev_time = prev_timestamps[client_name]
+              if prev_time && prev_time < change_time
+                Moltrio::Config.evict_cache_for(client_name)
+              end
+
+              prev_timestamps[client_name] = change_time
+            end
+
+            global_configs_root.each_child do |global_config|
+              config_name = global_config.basename
+              change_time = global_config.mtime
+
+              prev_time = prev_timestamps[config_name]
+              if prev_time && prev_time < change_time
+                Moltrio::Config.evict_all_caches
+              end
+
+              prev_timestamps[config_name] = change_time
+            end
+
+            sleep FS_POLL_INTERVAL
           end
-        }
-
-        global_config_callback = ->(*) {
-          Moltrio::Config.evict_all_caches
-        }
-
-        @fs_listeners = [
-          Listen.to("clients/", only: /config.yml\z/, &client_config_callback),
-          Listen.to("config/moltrio/", &global_config_callback),
-        ]
-
-        @fs_listeners.each(&:start)
+        end
 
         self
       end
