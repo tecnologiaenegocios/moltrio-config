@@ -5,7 +5,10 @@ module Moltrio
       FS_POLL_INTERVAL = 5
 
       def self.listen_fs_changes
-        return if defined?(@fs_listener)
+        if defined?(@fs_listener)
+          @fs_listener.terminate
+          Moltrio::Config.evict_all_caches
+        end
 
         @fs_listener = Thread.new do
           Thread.current.abort_on_exception = true
@@ -54,7 +57,10 @@ module Moltrio
       end
 
       def self.listen_etcd_changes
-        return if defined?(@etcd_listener)
+        if defined?(@fs_listener)
+          @etcd_listener.terminate
+          Moltrio::Config.evict_all_caches
+        end
 
         etcd_host = Moltrio.etcd_host
         etcd_port = Moltrio.etcd_port
