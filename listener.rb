@@ -21,7 +21,7 @@ module Moltrio
 
           loop do
             clients_root.each_child do |client_dir|
-              client_name = client_dir.basename
+              client_name = client_dir.basename.to_s
 
               change_time = begin
                 (client_dir + 'config.yml').mtime
@@ -38,7 +38,7 @@ module Moltrio
             end
 
             global_configs_root.each_child do |global_config|
-              config_name = global_config.basename
+              config_name = global_config.basename.to_s
               change_time = global_config.mtime
 
               prev_time = prev_timestamps[config_name]
