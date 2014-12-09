@@ -20,6 +20,8 @@ module Moltrio
           global_configs_root = project_root + 'config' + 'moltrio'
 
           loop do
+            found_configs = 0
+
             clients_root.each_child do |client_dir|
               client_name = client_dir.basename.to_s
 
@@ -34,6 +36,7 @@ module Moltrio
                 Moltrio::Config.evict_cache_for(client_name)
               end
 
+              found_configs += 1
               prev_timestamps[client_name] = change_time
             end
 
@@ -46,7 +49,13 @@ module Moltrio
                 Moltrio::Config.evict_all_caches
               end
 
+              found_configs += 1
               prev_timestamps[config_name] = change_time
+            end
+
+            if prev_timestamps.count > found_configs
+              prev_timestamps = {}
+              Moltrio::Config.evict_all_caches
             end
 
             sleep FS_POLL_INTERVAL
