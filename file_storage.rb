@@ -86,7 +86,7 @@ module Moltrio
           file.flock(File::LOCK_SH)
 
           preprocessed = ERB.new(File.read(path)).result
-          YAML.load(preprocessed)
+          YAML.load(preprocessed) || {}
         rescue Errno::ENOENT
           {}
         ensure
