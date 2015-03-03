@@ -1,6 +1,7 @@
 require_relative 'storage'
+
 require 'hamster'
-require 'active_support/core_ext'
+require 'active_support/core_ext/hash/deep_merge'
 
 module Moltrio
   module Config
