@@ -1,4 +1,4 @@
-require 'etcd'
+require 'hamster'
 
 module Moltrio
   module Config
