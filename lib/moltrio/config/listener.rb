@@ -99,7 +99,7 @@ module Moltrio
       end
 
       def self.start
-        storage = Moltrio::Config.storage
+        storage = Moltrio::Config.storage_type
         case storage
           when :filesystem
             listen_fs_changes

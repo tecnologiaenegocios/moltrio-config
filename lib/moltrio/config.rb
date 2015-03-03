@@ -16,17 +16,17 @@ module Moltrio
       freeze
     end
 
-    def self.storage
-      @storage ||= :filesystem
+    def self.storage_type
+      @storage_type ||= :filesystem
     end
 
-    VALID_STORAGES = %i(etcd filesystem)
-    def self.storage=(storage)
-      unless VALID_STORAGES.include?(storage)
-        raise "#{storage} is not valid. Pleases select one of #{VALID_STORAGES}"
+    VALID_STORAGE_TYPES = %i(etcd filesystem)
+    def self.storage_type=(storage_type)
+      unless VALID_STORAGE_TYPES.include?(storage)
+        raise "#{storage} is not valid. Pleases select one of #{VALID_STORAGE_TYPES}"
       end
 
-      @storage = storage
+      @storage_type = storage_type
     end
 
     def self.storage_options
