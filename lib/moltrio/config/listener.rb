@@ -71,8 +71,8 @@ module Moltrio
           Moltrio::Config.evict_all_caches
         end
 
-        etcd_host = Moltrio.etcd_host
-        etcd_port = Moltrio.etcd_port
+        etcd_host = Moltrio::Config.storage_options.fetch(:etcd_host)
+        etcd_port = Moltrio::Config.storage_options.fetch(:etcd_port)
 
         url = "http://#{etcd_host}:#{etcd_port}/v2/keys/moltrio".freeze
 
