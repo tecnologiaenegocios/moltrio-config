@@ -98,11 +98,15 @@ module Moltrio
         self
       end
 
-      class << self
-        if Moltrio.etcd_configured?
-          alias_method :start, :listen_etcd_changes
-        else
-          alias_method :start, :listen_fs_changes
+      def self.start
+        storage = Moltrio::Config.storage
+        case storage
+          when :filesystem
+            listen_fs_changes
+          when :etcd
+            listen_etcd_changes
+          else
+            raise "Don't know how to auto-reload for #{storage}"
         end
       end
 
