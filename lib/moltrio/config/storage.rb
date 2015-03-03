@@ -1,4 +1,4 @@
-require_relative '../undefined'
+require_relative 'undefined'
 
 module Moltrio
   module Config
