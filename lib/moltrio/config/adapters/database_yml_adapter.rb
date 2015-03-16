@@ -1,14 +1,18 @@
-require_relative 'storage'
+require_relative '../storage/file_storage'
+require_relative 'adapter'
 
 module Moltrio
   module Config
+    class DatabaseYmlAdapter < Adapter
 
-    class DatabaseYmlStorage < Storage
       attr_reader :real_storage, :environment
-
-      def initialize(storage, environment: rails_environment)
-        @real_storage = storage
+      def initialize(path, environment: rails_environment)
+        @real_storage = FileStorage.new(path)
         @environment = environment
+      end
+
+      def requires_namespace?
+        false
       end
 
       def [](key)
@@ -37,6 +41,5 @@ module Moltrio
         end
       end
     end
-
   end
 end

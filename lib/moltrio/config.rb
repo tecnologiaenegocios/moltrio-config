@@ -2,13 +2,7 @@ require 'thread_attr_accessor'
 require 'active_support/core_ext/module/delegation'
 
 require_relative "config/version"
-
 require_relative "config/builder"
-
-require_relative 'config/adapter_chain'
-
-require_relative 'config/storage/file_storage'
-require_relative 'config/storage/database_yml_storage'
 require_relative 'config/scoped_config'
 
 module Moltrio
