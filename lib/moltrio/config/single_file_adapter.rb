@@ -1,4 +1,5 @@
-require_relative "file_storage"
+require_relative "storage/file_storage"
+require_relative 'adapter'
 
 module Moltrio
   module Config
