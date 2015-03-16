@@ -5,11 +5,11 @@ require_relative 'adapter'
 module Moltrio
   module Config
     class SingleFileAdapter < Adapter
-      attr_reader :file_must_exist
-      def initialize(config, path, file_must_exist: false)
+      attr_reader :must_exist
+      def initialize(config, path, must_exist: false)
         @path = path
 
-        if file_must_exist && !Pathname(path).file?
+        if must_exist && !Pathname(path).file?
           raise "File '#{path}' doesn't exist!"
         end
       end
