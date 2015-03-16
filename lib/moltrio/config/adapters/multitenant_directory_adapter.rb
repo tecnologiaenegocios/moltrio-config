@@ -1,7 +1,7 @@
 require 'pathname'
 require 'hamster'
 
-require_relative 'storage/file_storage'
+require_relative '../storage/file_storage'
 require_relative 'adapter'
 
 module Moltrio

@@ -12,6 +12,7 @@ module Moltrio
         true
       end
 
+      attr_reader :config, :base_path
       def on_namespace(namespace)
         SingleRedisAdapter.new(config, [base_path, namespace].join("."))
       end
