@@ -7,11 +7,12 @@ require_relative 'adapter'
 module Moltrio
   module Config
     class MultitenantDirectoryAdapter
-      attr_reader :dir_path
-      def initialize(config, dir_path)
+      attr_reader :dir_path, :file_must_exist
+      def initialize(config, dir_path, file_must_exist: false)
         @config = config
         @dir_path = Pathname(dir_path)
         @single_adapters = Hamster.hash
+        @file_must_exist = file_must_exist
       end
 
       def requires_namespace?
@@ -31,7 +32,8 @@ module Moltrio
       attr_reader :single_adapters, :config
 
       def create_single_adapter_for(namespace)
-        SingleFileAdapter.new(config, dir_path + namespace.to_s + 'config.yml')
+        path = dir_path + namespace.to_s + 'config.yml'
+        SingleFileAdapter.new(config, path, file_must_exist: file_must_exist)
       end
     end
   end
