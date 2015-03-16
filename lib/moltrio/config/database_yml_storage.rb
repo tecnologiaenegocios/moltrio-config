@@ -1,3 +1,5 @@
+require_relative 'storage'
+
 module Moltrio
   module Config
 

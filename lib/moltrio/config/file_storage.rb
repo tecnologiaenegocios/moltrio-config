@@ -1,5 +1,8 @@
 require 'yaml'
 require 'hamster'
+require 'erb'
+
+require_relative 'storage'
 
 # This class uses Hamster hashes (instead of native ruby hashes) to allow
 # lockless multi-thread usage.
@@ -59,11 +62,14 @@ module Moltrio
         !value.equal?(not_found)
       end
 
+      def on_namespace(namespace)
+        scoped(namespace)
+      end
+
     private
 
       def hash
-        return @hash if defined?(@hash)
-        @hash = load_from_file
+        @hash ||= load_from_file
       end
 
       def splitted_key(key)
@@ -85,15 +91,13 @@ module Moltrio
           file = File.open(path, "r")
           file.flock(File::LOCK_SH)
 
-          preprocessed = ERB.new(File.read(path)).result
-          YAML.load(preprocessed) || {}
+          YAML.load_file(path)
         rescue Errno::ENOENT
-          {}
         ensure
           file && file.flock(File::LOCK_UN)
         end
 
-        ruby_to_hamster(ruby_hash)
+        ruby_to_hamster(ruby_hash || {})
       rescue Errno::ENOENT
         Hamster.hash
       end
