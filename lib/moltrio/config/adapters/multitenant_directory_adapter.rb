@@ -28,6 +28,14 @@ module Moltrio
         adapter
       end
 
+      def available_namespaces
+        config_child_dirs = dir_path.children
+          .select(&:directory?)
+          .select { |dir| (dir + 'config.yml').file? }
+
+        config_child_dirs.map { |dir| dir.basename.to_s }
+      end
+
     private
       attr_reader :single_adapters, :config
 

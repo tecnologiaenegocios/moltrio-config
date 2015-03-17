@@ -12,6 +12,10 @@ module Moltrio
         true
       end
 
+      def available_namespaces
+        @config.fetch(:redis).call.smembers(base_path)
+      end
+
       attr_reader :config, :base_path
       def on_namespace(namespace)
         SingleRedisAdapter.new(config, [base_path, namespace].join("."))

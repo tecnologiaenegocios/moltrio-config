@@ -34,6 +34,12 @@ module Moltrio
         adapters.any?(&:missing_namespace?)
       end
 
+      def available_namespaces
+        adapters.reduce(Hamster.set) { |set, adapter|
+          set.merge(adapter.available_namespaces)
+        }
+      end
+
     private
       attr_reader :adapters
 

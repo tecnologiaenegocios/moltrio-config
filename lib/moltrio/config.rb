@@ -42,6 +42,14 @@ module Moltrio
       chain(:default)
     end
 
+    def available_namespaces(chain_name = :default)
+      unless chain = root_chains[chain_name]
+        raise "No chain named #{chain_name} chain configured!"
+      end
+
+      chain.available_namespaces
+    end
+
     def chain(name)
       chain = namespaced_chains[name]
 

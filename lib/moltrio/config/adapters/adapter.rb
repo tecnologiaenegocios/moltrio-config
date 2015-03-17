@@ -1,4 +1,5 @@
 require 'active_support/core_ext/module/delegation'
+require_relative '../scoped_config'
 
 module Moltrio
   module Config
@@ -17,6 +18,14 @@ module Moltrio
       def missing_namespace?
         raise NotImplementedError,
           "Please define whether #{self.class} requires a namespace"
+      end
+
+      def scoped(scope)
+        ScopedConfig.new(self, scope)
+      end
+
+      def available_namespaces
+        []
       end
 
     private
