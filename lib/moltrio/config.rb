@@ -36,7 +36,7 @@ module Moltrio
       self
     end
 
-    delegate :[], :[]=, :has_key?, :fetch, to: :default_chain
+    delegate :[], :[]=, :has_key?, :fetch, :scoped, to: :default_chain
 
     def default_chain
       chain(:default)
@@ -47,7 +47,7 @@ module Moltrio
 
       if chain.nil?
         raise "No chain named #{name.inspect} configured!"
-      elsif chain.requires_namespace?
+      elsif chain.missing_namespace?
         raise "Chain #{name.inspect} requires namespace, but no namespace provided"
       else
         chain

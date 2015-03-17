@@ -7,14 +7,14 @@ module Moltrio
       delegate :[], :[]=, :fetch, :has_key?, to: :storage
 
       def on_namespace(_)
-        if requires_namespace?
+        if missing_namespace?
           raise NotImplementedError, "Please override on_namespace for #{self.class}!"
         else
           self
         end
       end
 
-      def requires_namespace?
+      def missing_namespace?
         raise NotImplementedError,
           "Please define whether #{self.class} requires a namespace"
       end

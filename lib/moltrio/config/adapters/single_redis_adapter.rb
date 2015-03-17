@@ -9,7 +9,7 @@ module Moltrio
         @prefix = prefix
       end
 
-      def requires_namespace?
+      def missing_namespace?
         false
       end
 

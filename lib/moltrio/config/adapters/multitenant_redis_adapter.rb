@@ -8,7 +8,7 @@ module Moltrio
         @base_path = base_path
       end
 
-      def requires_namespace?
+      def missing_namespace?
         true
       end
 

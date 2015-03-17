@@ -11,7 +11,7 @@ module Moltrio
         @environment = environment
       end
 
-      def requires_namespace?
+      def missing_namespace?
         false
       end
 

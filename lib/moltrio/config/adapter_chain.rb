@@ -1,8 +1,9 @@
 require 'hamster'
+require_relative 'adapters/adapter'
 
 module Moltrio
   module Config
-    class AdapterChain
+    class AdapterChain < Adapter
       def initialize(adapters)
         @adapters = Hamster.list(*adapters)
       end
@@ -29,8 +30,8 @@ module Moltrio
         adapters_for_key(key).any?
       end
 
-      def requires_namespace?
-        adapters.any?(&:requires_namespace?)
+      def missing_namespace?
+        adapters.any?(&:missing_namespace?)
       end
 
     private

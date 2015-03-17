@@ -15,7 +15,7 @@ module Moltrio
         @must_exist = must_exist
       end
 
-      def requires_namespace?
+      def missing_namespace?
         true
       end
 
