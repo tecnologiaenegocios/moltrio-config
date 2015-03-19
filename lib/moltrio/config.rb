@@ -4,6 +4,7 @@ require 'active_support/core_ext/module/delegation'
 require_relative "config/version"
 require_relative "config/builder"
 require_relative 'config/scoped_config'
+require_relative 'config/chain_container'
 
 module Moltrio
   module Config
@@ -16,82 +17,82 @@ module Moltrio
 
     extend ThreadAttrAccessor
     thread_attr_accessor :current_namespace, inherit: true, private: true
-    thread_attr_accessor :cached_chains, inherit: true, private: true
+    thread_attr_accessor :cached_containers, inherit: true, private: true
 
     def enable_caching
-      self.cached_chains ||= {}
+      self.cached_containers ||= {}
     end
 
     def disable_caching
-      self.cached_chains = nil
+      self.cached_containers = nil
     end
 
-    def switch_to_namespace(namespace)
-      self.current_namespace = namespace
+    def on_namespace(namespace)
+      if block_given?
+        prev_namespace = current_namespace
+        self.current_namespace = namespace
 
-      if cached_chains
-        cached_chains.delete(:namespaced)
+        if cached_containers
+          cached_containers.delete(:namespaced)
+        end
+
+        begin
+          yield
+        ensure
+          self.current_namespace = prev_namespace
+        end
+
+        self
+      else
+        ChainContainer.new(chains_on_namespace(namespace))
       end
-
-      self
     end
 
     delegate :[], :[]=, :has_key?, :fetch, :scoped, to: :default_chain
+    delegate :available_namespaces, to: :root_container
+    delegate :chain, to: :namespaced_container
 
     def default_chain
       chain(:default)
     end
 
-    def available_namespaces(chain_name = :default)
-      unless chain = root_chains[chain_name]
-        raise "No chain named #{chain_name} chain configured!"
-      end
-
-      chain.available_namespaces
-    end
-
-    def chain(name)
-      chain = namespaced_chains[name]
-
-      if chain.nil?
-        raise "No chain named #{name.inspect} configured!"
-      elsif chain.missing_namespace?
-        raise "Chain #{name.inspect} requires namespace, but no namespace provided"
-      else
-        chain
-      end
-    end
-
   private
 
-    def root_chains
-      return cached_chains[:root] if cached_chains && cached_chains[:root]
+    def root_container
+      return cached_containers[:root] if cached_containers && cached_containers[:root]
+      container = ChainContainer.new(root_chains)
 
-      chains = Builder.run(&@configuration_block).chains
-
-      if cached_chains
-        cached_chains[:root] = chains
+      if cached_containers
+        cached_containers[:root] = container
       end
 
-      chains
+      container
     end
 
-    def namespaced_chains
-      return cached_chains[:namespaced] if cached_chains && cached_chains[:namespaced]
+    def namespaced_container
+      return cached_containers[:namespaced] if cached_containers && cached_containers[:namespaced]
 
       if current_namespace
-        chains = root_chains.map { |chain_name, chain|
-          [chain_name, chain.on_namespace(current_namespace)]
-        }
+        container = ChainContainer.new(chains_on_namespace(current_namespace))
       else
-        chains = root_chains
+        container = root_container
       end
 
-      if cached_chains
-        cached_chains[:namespaced_chains] = chains
+      if cached_containers
+        cached_containers[:namespaced_chains] = chains
       end
 
-      chains
+      container
+    end
+
+    def root_chains
+      Builder.run(&@configuration_block).chains
+    end
+
+    def chains_on_namespace(namespace)
+      root_chains.map { |chain_name, chain|
+        [chain_name, chain.on_namespace(current_namespace)]
+      }
     end
   end
 end
