@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "hamster", "~> 0.4"
+  spec.add_dependency "hamster", "~> 1.0"
   spec.add_dependency "thread_attr_accessor"
   spec.add_dependency "activesupport"
 
