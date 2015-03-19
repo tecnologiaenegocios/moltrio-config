@@ -91,7 +91,7 @@ module Moltrio
 
     def chains_on_namespace(namespace)
       root_chains.map { |chain_name, chain|
-        [chain_name, chain.on_namespace(current_namespace)]
+        [chain_name, chain.on_namespace(namespace)]
       }
     end
   end
