@@ -3,6 +3,7 @@ require_relative 'adapters/multitenant_directory_adapter'
 require_relative 'adapters/single_redis_adapter'
 require_relative 'adapters/single_file_adapter'
 require_relative 'adapters/database_yml_adapter'
+require_relative 'adapters/env_variables_adapter'
 
 require_relative 'adapter_chain'
 
@@ -42,6 +43,11 @@ module Moltrio
 
       def database_yml(path)
         link = DatabaseYmlAdapter.new(path)
+        @links = @links << link
+      end
+
+      def env_variables(prefix)
+        link = EnvVariablesAdapter.new(prefix)
         @links = @links << link
       end
 
