@@ -37,12 +37,12 @@ module Moltrio
         end
 
         begin
-          yield
+          value = yield
         ensure
           self.current_namespace = prev_namespace
         end
 
-        self
+        value
       else
         ChainContainer.new(chains_on_namespace(namespace))
       end
