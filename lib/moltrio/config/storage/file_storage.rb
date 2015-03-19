@@ -119,7 +119,7 @@ module Moltrio
       def hamster_to_ruby(object)
         return object unless object.kind_of?(Hamster::Hash)
 
-        object.inject({}) { |hash, key, value|
+        object.inject({}) { |hash, (key, value)|
           hash[key] = hamster_to_ruby(value)
           hash
         }
