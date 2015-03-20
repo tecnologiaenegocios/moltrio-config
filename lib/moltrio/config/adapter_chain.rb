@@ -17,7 +17,7 @@ module Moltrio
       end
 
       def [](key)
-        if adapter = adapters_for_key(key).first
+        if adapter = adapter_for_key(key)
           adapter[key]
         end
       end
@@ -27,7 +27,7 @@ module Moltrio
       end
 
       def has_key?(key)
-        adapters_for_key(key).any?
+        !!adapter_for_key(key)
       end
 
       def missing_namespace?
@@ -43,8 +43,8 @@ module Moltrio
     private
       attr_reader :adapters
 
-      def adapters_for_key(key)
-        adapters.select { |adapter| adapter.has_key?(key) }
+      def adapter_for_key(key)
+        adapters.detect { |adapter| adapter.has_key?(key) }
       end
 
       def first_adapter
