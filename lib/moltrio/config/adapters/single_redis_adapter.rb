@@ -14,21 +14,21 @@ module Moltrio
       end
 
       def has_key?(key)
-        new_redis.keys(normalize_key(key)).count == 1
+        redis.keys(normalize_key(key)).count == 1
       end
 
       def [](key)
-        new_redis[normalize_key(key)]
+        redis[normalize_key(key)]
       end
 
       def []=(key, value)
-        new_redis[normalize_key(key)] = value
+        redis[normalize_key(key)] = value
       end
 
     private
 
-      def new_redis
-        @redis_builder.call
+      def redis
+        @redis ||= @redis_builder.call
       end
 
       def normalize_key(key)
