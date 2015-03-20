@@ -16,7 +16,7 @@ module Moltrio
     end
 
     extend ThreadAttrAccessor
-    thread_attr_accessor :current_namespace, inherit: true, private: true
+    thread_attr_accessor :current_namespace, inherit: true, private: :writer
     thread_attr_accessor :cached_containers, inherit: true, private: true
 
     def enable_caching
