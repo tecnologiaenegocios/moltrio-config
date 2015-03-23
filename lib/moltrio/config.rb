@@ -18,6 +18,9 @@ module Moltrio
     thread_attr_accessor :current_namespace, inherit: true, private: :writer
     thread_attr_accessor :cached_containers, inherit: true, private: true
 
+    delegate :available_namespaces, to: :root_container
+    delegate(*Adapter.instance_methods(false), :chain, to: :namespaced_container)
+
     def enable_caching
       self.cached_containers ||= {}
     end
@@ -45,14 +48,6 @@ module Moltrio
       else
         ChainContainer.new(chains_on_namespace(namespace))
       end
-    end
-
-    delegate :[], :[]=, :has_key?, :fetch, :scoped, to: :default_chain
-    delegate :available_namespaces, to: :root_container
-    delegate :chain, to: :namespaced_container
-
-    def default_chain
-      chain(:default)
     end
 
   private
