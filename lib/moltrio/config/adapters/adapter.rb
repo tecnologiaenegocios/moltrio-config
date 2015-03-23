@@ -36,6 +36,28 @@ module Moltrio
         end
       end
 
+      def slice(*keys)
+        keys
+          .select { |key| has_key?(key)    }
+          .map    { |key| [key, self[key]] }
+          .to_h
+      end
+
+      def fetch_all(*keys)
+        hash = slice(*keys)
+        missing_keys = keys - hash.keys
+
+        if missing_keys.none?
+          hash
+        elsif block_given?
+          missing_keys.each do |key|
+            hash[key] = yield(key, hash)
+          end
+        else
+          raise KeyError, missing_keys
+        end
+      end
+
       def missing_namespace?
         raise NotImplementedError,
           "Please define whether #{self.class} requires a namespace"
