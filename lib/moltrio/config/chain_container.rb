@@ -1,3 +1,5 @@
+require_relative 'adapters'
+
 module Moltrio
   module Config
 
@@ -6,7 +8,7 @@ module Moltrio
         @chains = chains
       end
 
-      delegate :[], :[]=, :has_key?, :fetch, :scoped, to: :default_chain
+      delegate(*Adapter.instance_methods(false), to: :default_chain)
 
       def default_chain
         chain(:default)
