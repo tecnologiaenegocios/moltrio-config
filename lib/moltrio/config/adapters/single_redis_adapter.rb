@@ -14,7 +14,7 @@ module Moltrio
       end
 
       def has_key?(key)
-        redis.keys(normalize_key(key)).count == 1
+        redis.exists(normalize_key(key))
       end
 
       def [](key)
