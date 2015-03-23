@@ -28,7 +28,7 @@ module Moltrio
       end
 
       def scoped(scope)
-        self.class.new(self, scope)
+        self.class.new(base, scope_key(scope))
       end
 
       def on_namespace(name)
