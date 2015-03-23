@@ -1,4 +1,3 @@
-require_relative '../scoped_config'
 require_relative '../undefined'
 
 module Moltrio
@@ -40,10 +39,6 @@ module Moltrio
       def missing_namespace?
         raise NotImplementedError,
           "Please define whether #{self.class} requires a namespace"
-      end
-
-      def scoped(scope)
-        ScopedConfig.new(self, scope)
       end
 
       def available_namespaces

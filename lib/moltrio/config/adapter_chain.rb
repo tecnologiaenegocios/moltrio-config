@@ -1,5 +1,5 @@
 require 'hamster'
-require_relative 'adapters/adapter'
+require_relative 'adapters'
 
 module Moltrio
   module Config

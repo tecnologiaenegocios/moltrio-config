@@ -3,7 +3,6 @@ require 'active_support/core_ext/module/delegation'
 
 require_relative "config/version"
 require_relative "config/builder"
-require_relative 'config/scoped_config'
 require_relative 'config/chain_container'
 
 module Moltrio
