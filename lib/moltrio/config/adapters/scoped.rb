@@ -31,6 +31,14 @@ module Moltrio
         self.class.new(self, scope)
       end
 
+      def on_namespace(name)
+        self.class.new(base.on_namespace(name), scope)
+      end
+
+      def missing_namespace?
+        base.missing_namespace?
+      end
+
       delegate_to_base_scoping_first_argument :[], :[]=, :has_key?
 
     private
