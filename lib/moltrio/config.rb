@@ -22,8 +22,10 @@ module Moltrio
     delegate(*Adapter.instance_methods(false), :chain, to: :namespaced_container)
     delegate :available_namespaces, to: :root_container
 
+    ContainerCache = Struct.new(:root, :namespaced)
+
     def enable_caching
-      self.cached_containers ||= {}
+      self.cached_containers ||= ContainerCache.new
     end
 
     def disable_caching
@@ -55,7 +57,7 @@ module Moltrio
       self.current_namespace = namespace
 
       if cached_containers
-        cached_containers.delete(:namespaced)
+        cached_containers.namespaced = nil
       end
 
       self
@@ -64,18 +66,18 @@ module Moltrio
   private
 
     def root_container
-      return cached_containers[:root] if cached_containers && cached_containers[:root]
+      return cached_containers.root if cached_containers && cached_containers.root
       container = ChainContainer.new(root_chains)
 
       if cached_containers
-        cached_containers[:root] = container
+        cached_containers.root = container
       end
 
       container
     end
 
     def namespaced_container
-      return cached_containers[:namespaced] if cached_containers && cached_containers[:namespaced]
+      return cached_containers.namespaced if cached_containers && cached_containers.namespaced
 
       if current_namespace
         container = ChainContainer.new(chains_on_namespace(current_namespace))
@@ -84,7 +86,7 @@ module Moltrio
       end
 
       if cached_containers
-        cached_containers[:namespaced] = container
+        cached_containers.namespaced = container
       end
 
       container
