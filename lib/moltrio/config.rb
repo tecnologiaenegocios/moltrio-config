@@ -32,22 +32,28 @@ module Moltrio
     def on_namespace(namespace)
       if block_given?
         prev_namespace = current_namespace
-        self.current_namespace = namespace
-
-        if cached_containers
-          cached_containers.delete(:namespaced)
-        end
+        switch_to_namespace!(namespace)
 
         begin
           value = yield
         ensure
-          self.current_namespace = prev_namespace
+          switch_to_namespace!(prev_namespace)
         end
 
         value
       else
         ChainContainer.new(chains_on_namespace(namespace))
       end
+    end
+
+    def switch_to_namespace!(namespace)
+      self.current_namespace = namespace
+
+      if cached_containers
+        cached_containers.delete(:namespaced)
+      end
+
+      self
     end
 
   private
