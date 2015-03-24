@@ -19,8 +19,8 @@ module Moltrio
     thread_attr_accessor :current_namespace, inherit: true, private: :writer
     thread_attr_accessor :cached_containers, inherit: true, private: true
 
-    delegate :available_namespaces, to: :root_container
     delegate(*Adapter.instance_methods(false), :chain, to: :namespaced_container)
+    delegate :available_namespaces, to: :root_container
 
     def enable_caching
       self.cached_containers ||= {}
