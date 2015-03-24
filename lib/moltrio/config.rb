@@ -1,6 +1,7 @@
 require 'thread_attr_accessor'
 require 'active_support/core_ext/module/delegation'
 
+require_relative 'errors'
 require_relative "config/version"
 require_relative "config/builder"
 require_relative 'config/chain_container'
@@ -32,12 +33,12 @@ module Moltrio
     def on_namespace(namespace)
       if block_given?
         prev_namespace = current_namespace
-        switch_to_namespace!(namespace)
+        switch_to_namespace!(namespace, strict: true)
 
         begin
           value = yield
         ensure
-          switch_to_namespace!(prev_namespace)
+          switch_to_namespace!(prev_namespace, strict: false)
         end
 
         value
@@ -46,7 +47,11 @@ module Moltrio
       end
     end
 
-    def switch_to_namespace!(namespace)
+    def switch_to_namespace!(namespace, strict: true)
+      if strict && !available_namespaces.include?(namespace)
+        raise NoSuchNamespace.new(namespace)
+      end
+
       self.current_namespace = namespace
 
       if cached_containers
