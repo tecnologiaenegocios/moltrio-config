@@ -84,7 +84,7 @@ module Moltrio
       end
 
       if cached_containers
-        cached_containers[:namespaced_chains] = chains
+        cached_containers[:namespaced] = container
       end
 
       container
