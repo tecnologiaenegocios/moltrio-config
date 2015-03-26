@@ -32,7 +32,7 @@ module Moltrio
       end
 
       def normalize_key(key)
-        [prefix, key].join('.')
+        [prefix, key].join(':')
       end
     end
   end
