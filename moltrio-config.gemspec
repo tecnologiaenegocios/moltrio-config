@@ -24,7 +24,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "hamster", "~> 1.0"
-  spec.add_dependency "thread_attr_accessor", "~> 0.3.0"
+  spec.add_dependency "thread_attr_accessor", "~> 0.3.1"
   spec.add_dependency "activesupport"
 
   spec.add_development_dependency "redis", "~> 3.2.1"
