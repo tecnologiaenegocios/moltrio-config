@@ -18,11 +18,11 @@ module Moltrio
       end
 
       def [](key)
-        redis[normalize_key(key)]
+        redis.get normalize_key(key)
       end
 
       def []=(key, value)
-        redis[normalize_key(key)] = value
+        redis.set(normalize_key(key), value)
       end
 
     private
