@@ -22,6 +22,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "thread_attr_accessor", "~> 0.4.0"
   spec.add_dependency "activesupport"
 
+  spec.metadata["yard.run"] = "yri" # use "yard" to build full HTML docs
+
   spec.add_development_dependency "redis", "~> 3.2.1"
   spec.add_development_dependency "bundler", ">= 2.3.12"
   spec.add_development_dependency "rake", ">= 12.3.3"
