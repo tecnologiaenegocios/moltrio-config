@@ -6,8 +6,8 @@ require 'moltrio/config/version'
 Gem::Specification.new do |spec|
   spec.name          = "moltrio-config"
   spec.version       = Moltrio::Config::VERSION
-  spec.authors       = ["Renato Zannon"]
-  spec.email         = ["zannon@tn.com.br"]
+  spec.authors       = ["Renato Zannon", "Alexandre Lenkaster (current maintainer)"]
+  spec.email         = ["adm@moltrio.com.br", "lenkaster@tn.com.br"]
 
   spec.summary       = %q{Multi-source, multi-tenant, thread-safe configuration library}
   spec.homepage      = "https://github.com/tecnologiaenegocios/moltrio-config"
