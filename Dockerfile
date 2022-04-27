@@ -1,6 +1,7 @@
 FROM ruby:3.1.2-alpine3.15
 
-ENV HOME /app
+ENV HOME /root
+ENV WORKDIR $HOME/app
 ENV GEM_HOME="/usr/local/bundle"
 ENV PATH $GEM_HOME/bin:$GEM_HOME/gems/bin:$PATH
 
@@ -14,12 +15,12 @@ RUN apk update --quiet &&\
  openssh \
  tzdata
 
-RUN mkdir -p $HOME
+RUN mkdir -p $WORKDIR
 
-COPY . $HOME
+COPY . $WORKDIR
 
-WORKDIR $HOME
+WORKDIR $WORKDIR
 
-RUN $HOME/bin/setup
+RUN $WORKDIR/bin/setup
 
 CMD ["bin", "console"]
