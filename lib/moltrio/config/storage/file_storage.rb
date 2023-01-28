@@ -91,7 +91,7 @@ module Moltrio
           file = File.open(path, "r")
           file.flock(File::LOCK_SH)
 
-          YAML.load_file(path)
+          YAML.load_file(path, aliases: true)
         rescue Errno::ENOENT
         ensure
           file && file.flock(File::LOCK_UN)
