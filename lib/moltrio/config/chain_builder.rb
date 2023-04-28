@@ -1,4 +1,6 @@
 require 'hamster'
+require 'active_support'
+require 'active_support/core_ext'
 require_relative 'adapters'
 require_relative 'adapter_chain'
 
@@ -27,7 +29,9 @@ module Moltrio
       end
 
       def single_file(*args)
-        link = SingleFileAdapter.new(config, *args)
+        args.prepend config
+        opts = args.extract_options!
+        link = SingleFileAdapter.new(*args, **opts)
         @links = @links << link
       end
 
